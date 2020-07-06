@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 public class TermDetails extends HashMap<String, Pair<Term, HashSet<Result>>> {
 
-
     @Override
     public String toString() {
         return entrySet().stream().map(e -> "docuemnt "  + e.getKey() + " value "+ e.getValue()+"\n").collect(Collectors.joining());

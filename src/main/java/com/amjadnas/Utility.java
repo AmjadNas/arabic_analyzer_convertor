@@ -86,14 +86,9 @@ public final class Utility {
      */
     public static String stripText(String text) {
 
-        String lower_case = text.toLowerCase()
-                .replaceAll("-"+System.lineSeparator(), "");
-
-        return lower_case.replaceAll("((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)","")
-                .replaceAll("([^.@\\s]+)(\\.[^.@\\s]+)*@([^.@\\s]+\\.)+([^.@\\s]+)", "")
-                .replaceAll("http.*", "")
-                .replaceAll("\\W+", " ")
-                .replaceAll("[\\d]", "" );
+        return text.replaceAll("[،]", " ")
+                .replaceAll("[.]", " ")
+                .replaceAll("[,]", " ");
     }
 
     /**

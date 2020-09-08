@@ -1,4 +1,4 @@
-package com.amjadnas;
+package com.amjadnas.objects;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -6,11 +6,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Term implements Comparable<Term> {
 
     private String token;
-    private AtomicInteger frequency;
+    private AtomicInteger totalFrequency;
 
-    public Term(String token, AtomicInteger frequency) {
+    public Term(String token, AtomicInteger totalFrequency) {
         this.token = token;
-        this.frequency = frequency;
+        this.totalFrequency = totalFrequency;
     }
 
     public String getToken() {
@@ -21,16 +21,16 @@ public class Term implements Comparable<Term> {
         this.token = token;
     }
 
-    public AtomicInteger getFrequency() {
-        return frequency;
+    public AtomicInteger getTotalFrequency() {
+        return totalFrequency;
     }
 
-    public void setFrequency(AtomicInteger frequency) {
-        this.frequency = frequency;
+    public void setTotalFrequency(AtomicInteger totalFrequency) {
+        this.totalFrequency = totalFrequency;
     }
     @Override
     public int compareTo(Term o) {
-        return Integer.compare(this.frequency.intValue(), o.frequency.intValue());
+        return Integer.compare(this.totalFrequency.intValue(), o.totalFrequency.intValue());
     }
 
     @Override
@@ -52,7 +52,7 @@ public class Term implements Comparable<Term> {
     public String toString() {
         return "Term{" +
                 "token='" + token + '\'' +
-                ", frequency=" + frequency +
+                ", frequency=" + totalFrequency +
                 '}';
     }
 }

@@ -1,12 +1,11 @@
-package com.amjadnas;
+package com.amjadnas.objects;
 
 import java.util.Objects;
 
-public class Pair <F, S> {
+public class Pair<F, S> {
 
     private F first;
     private S second;
-
 
     public Pair(F first, S second) {
         this.first = first;
@@ -46,6 +45,23 @@ public class Pair <F, S> {
 
     @Override
     public String toString() {
-        return "{" + first +", "+ second +'}';
+        return "{" + first + ", " + second + '}';
+    }
+
+
+    public static <F, S extends Comparable<S>> int reverseCompareSecond(Pair<F, S> pair, Pair<F, S> pair2) {
+        return pair2.second.compareTo(pair.second);
+    }
+
+    public static <F, S extends Comparable<S>> int compareSecond(Pair<F, S> pair, Pair<F, S> pair2) {
+        return pair.second.compareTo(pair2.second);
+    }
+
+    public static <F extends Comparable<F>, S> int compareFirst(Pair<F, S> pair, Pair<F, S> pair2) {
+        return pair.first.compareTo(pair2.first);
+    }
+
+    public static <F extends Comparable<F>, S> int reverseCompareFirst(Pair<F, S> pair, Pair<F, S> pair2) {
+        return pair2.first.compareTo(pair.first);
     }
 }

@@ -1,4 +1,4 @@
-package com.amjadnas;
+package com.amjadnas.utills;
 
 public final class Utility {
     private Utility(){}

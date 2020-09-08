@@ -1,4 +1,7 @@
-package com.amjadnas;
+package com.amjadnas.ui;
+
+import com.amjadnas.Controller;
+import com.amjadnas.listeners.Taskistener;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -14,26 +17,37 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.amjadnas.OptionDialog.showErrorDialog;
+import static com.amjadnas.ui.OptionDialog.showErrorDialog;
+import static com.amjadnas.ui.OptionDialog.showSuccessDialog;
 
-public class MainScreen extends JFrame implements Runnable, WindowListener {
+public class TextProcessScreen extends JFrame implements Runnable, WindowListener, Taskistener {
     private JButton browseButton;
     private JList<String> list1;
     private JButton processFilesButton;
     private JButton saveTokensButton;
     private JPanel mainPanel;
+    private JButton browseTerms;
+    private JButton browseVocabulary;
+    private JTextField vocabularyPathTextField;
+    private JTextField termsPathTextField;
+    private JTextField stopWordsPathTextField;
+    private JButton browseStopwords;
     private String folderPath;
     private CompletableFuture<Vector<String>> completableFuture;
+    private Controller controller;
 
-    public MainScreen() {
+    public TextProcessScreen() {
         processFilesButton.addActionListener(this::handleProcess);
         browseButton.addActionListener(this::handleOpenFolder);
+        browseStopwords.addActionListener(this::handleBrowseStopWords);
+        browseTerms.addActionListener(this::handleBrowseTerms);
+        browseVocabulary.addActionListener(this::handleBrowseVocabulary);
+        saveTokensButton.addActionListener(this::extractVocabulary);
     }
-
 
     @Override
     public void run() {
-
+        controller = Controller.getInstance();
         setContentPane(mainPanel);
         setBounds(new Rectangle(640, 480));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -85,28 +99,66 @@ public class MainScreen extends JFrame implements Runnable, WindowListener {
             int returnVal = fc.showDialog(this, "Select");
             if (returnVal == JFileChooser.APPROVE_OPTION) {
 
-                Parser parser = new Parser();
-                parser.processAsync(fc.getSelectedFile(), new File(folderPath).listFiles());
-
+                controller.processFiles(this, fc.getSelectedFile(), termsPathTextField.getText(), stopWordsPathTextField.getText(), folderPath);
 
             }else  {
-                showErrorDialog(this, "You to choose a directory to save the files in it.");
+                showErrorDialog(this, "You have to choose a directory to save the files in it.");
             }
-        } catch (IOException e) {
+        } catch (IOException  e) {
             showErrorDialog(this, e.getMessage());
         }
 
     }
 
-    @Override
-    public void windowOpened(WindowEvent e) {
+    private void handleBrowseTerms(ActionEvent actionEvent) {
+        chooseFileForTextField(termsPathTextField);
+    }
 
+    private void handleBrowseStopWords(ActionEvent actionEvent) {
+        chooseFileForTextField(stopWordsPathTextField);
+    }
+
+    private void handleBrowseVocabulary(ActionEvent actionEvent) {
+        chooseFileForTextField(vocabularyPathTextField);
+    }
+
+    private void extractVocabulary(ActionEvent actionEvent) {
+        if (!vocabularyPathTextField.getText().isEmpty()){
+            controller.extractVocabulary(this,vocabularyPathTextField.getText(), termsPathTextField.getText());
+        }else
+            showErrorDialog(this, "A controlled vocabulary must be loaded!");
+    }
+
+    private void chooseFileForTextField(JTextField textField) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+        int returnVal = fileChooser.showDialog(this, "Select File");
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            String path = fileChooser.getSelectedFile().getAbsolutePath();
+            textField.setText(path);
+        }
+    }
+
+    @Override
+    public void onSuccess(String message) {
+        showSuccessDialog(this, message);
+    }
+
+    @Override
+    public void onError(Exception e) {
+        showErrorDialog(this, e.getMessage());
     }
 
     @Override
     public void windowClosing(WindowEvent e) {
         completableFuture.cancel(true);
         completableFuture = null;
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+
     }
 
     @Override
@@ -133,4 +185,6 @@ public class MainScreen extends JFrame implements Runnable, WindowListener {
     public void windowDeactivated(WindowEvent e) {
 
     }
+
+
 }

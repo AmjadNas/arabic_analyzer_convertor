@@ -18,12 +18,14 @@ public class Parser {
     private final Map<String, Integer> terms;
     private final HashSet<String> stopWords;
     private final HashSet<String> vocabulary;
+    private final boolean trimTerm;
 
 
-    public Parser() {
+    public Parser(boolean trimTerm) {
         terms = new HashMap<>();
         stopWords = new HashSet<>();
         vocabulary = new HashSet<>();
+        this.trimTerm = trimTerm;
     }
 
 
@@ -97,7 +99,7 @@ public class Parser {
                     listener.onProgress(" processed file: " + tmp.getName(), progress);
                 } catch (IOException e) {
                     listener.onProgress(" failed to process file: " + tmp.getName(), progress);
-
+                    e.printStackTrace();
                 }
 
             }
@@ -129,7 +131,8 @@ public class Parser {
             DocumentHandler documentHandler = DocumentHandlerFactory.getHandler(extension);
             List<String> lines = documentHandler.parseDocument(tmp);
             for (String line : lines) {
-                documentHandler.writeText(writer, terms, line, stopWords);
+                if (!line.trim().isEmpty())
+                    documentHandler.writeText(writer, terms, line, stopWords, trimTerm);
 
             }
 
@@ -139,7 +142,9 @@ public class Parser {
     private void loadTextIntoSet(File file, HashSet<String> vocabulary) throws IOException {
         String extension = FilenameUtils.getExtension(file.getName());
         DocumentHandler documentHandler = DocumentHandlerFactory.getHandler(extension);
-        vocabulary.addAll(documentHandler.normalizeLines(documentHandler.parseDocument(file)));
+        List<String> lines = documentHandler.parseDocument(file);
+        lines = documentHandler.normalizeLines(lines, trimTerm);
+        lines.forEach(vocabulary::add);
     }
 
 

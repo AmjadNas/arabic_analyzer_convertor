@@ -34,12 +34,12 @@ public final class Controller {
         return instance;
     }
 
-    public void extractVocabulary(Taskistener listener, String vocabularyDir, String termsDir) {
-        new ExtractVocabulary(listener, vocabularyDir, termsDir).execute();
+    public void extractVocabulary(Taskistener listener, String vocabularyDir, String termsDir, boolean trimTerm) {
+        new ExtractVocabulary(listener, vocabularyDir, termsDir, trimTerm).execute();
     }
 
-    public void processFiles(Taskistener listener, File fc, String termsDir, String stopWordsDir, String folderPath) {
-        new ProcessFiles(listener, stopWordsDir, termsDir, fc, folderPath).execute();
+    public void processFiles(Taskistener listener, File fc, String termsDir, String stopWordsDir, String folderPath, boolean trimTerm) {
+        new ProcessFiles(listener, stopWordsDir, termsDir, fc, folderPath, trimTerm).execute();
     }
 
     private void exploreDirectory(String dir, List<File> list){
@@ -61,13 +61,15 @@ public final class Controller {
         private Taskistener listener;
         private final File file;
         private ProgressMonitor progressMonitor;
+        private final boolean trimTerm;
 
-        public ProcessFiles(Taskistener listener, String stopWordsDir, String termsDir, File file, String folderPath) {
+        public ProcessFiles(Taskistener listener, String stopWordsDir, String termsDir, File file, String folderPath, boolean trimTerm) {
             this.stopWordsDir = stopWordsDir;
             this.termsDir = termsDir;
             this.listener = listener;
             this.file = file;
             this.folderPath = folderPath;
+            this.trimTerm = trimTerm;
         }
 
         @Override
@@ -97,7 +99,7 @@ public final class Controller {
 
         @Override
         protected Void doInBackground() throws Exception {
-            Parser parser = new Parser();
+            Parser parser = new Parser(trimTerm);
             onPreStart();
             try {
                 if (!termsDir.isEmpty())
@@ -106,7 +108,7 @@ public final class Controller {
                     parser.loadStopWords(new File(stopWordsDir));
 
                 progressMonitor.setNote("Scanning and collecting files...");
-
+                System.out.println("aaaa");
                 List<File> files = new ArrayList<>();
                 exploreDirectory(folderPath, files);
 
@@ -127,11 +129,13 @@ public final class Controller {
         private String termsDir;
         private Taskistener listener;
         private FileReadProgressDialog dialog;
+        private final boolean trimTerm;
 
-        public ExtractVocabulary(Taskistener listener, String vocabularyDir, String termsDir) {
+        public ExtractVocabulary(Taskistener listener, String vocabularyDir, String termsDir, boolean trimTerm) {
             this.vocabularyDir = vocabularyDir;
             this.termsDir = termsDir;
             this.listener = listener;
+            this.trimTerm = trimTerm;
         }
 
         @Override
@@ -159,7 +163,7 @@ public final class Controller {
 
         @Override
         protected Void doInBackground() throws Exception {
-            Parser parser = new Parser();
+            Parser parser = new Parser(trimTerm);
             onPreStart();
 
             try {

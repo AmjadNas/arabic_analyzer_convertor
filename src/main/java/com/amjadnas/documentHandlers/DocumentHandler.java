@@ -3,6 +3,7 @@ package com.amjadnas.documentHandlers;
 import com.amjadnas.utills.AraNormalizer;
 import com.amjadnas.utills.DiacriticsRemover;
 import com.amjadnas.utills.PunctuationsRemover;
+import com.amjadnas.utills.RootStemmer;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -15,24 +16,26 @@ public abstract class DocumentHandler {
     private final DiacriticsRemover diacriticsRemover;
     private final AraNormalizer araNormalizer;
     private final PunctuationsRemover punctuationsRemover;
+    private final RootStemmer rootStemmer;
 
     DocumentHandler() {
         tokennizer = new AlKhalil2.text.tokenization.Tokenization();
         diacriticsRemover = new DiacriticsRemover();
         araNormalizer = new AraNormalizer();
         punctuationsRemover = new PunctuationsRemover();
+        rootStemmer = new RootStemmer();
     }
 
     public abstract List<String> parseDocument(File file) throws IOException;
 
-    public List<String> normalizeLines(List<String> lines){
+    public List<String> normalizeLines(List<String> lines, boolean trimTerms){
         return lines.stream()
-                .map(this::normalizeLine)
+                .map(line -> normalizeLine(line, trimTerms))
                 .collect(Collectors.toList());
     }
 
-    public void writeText(BufferedWriter writer, Map<String,Integer> terms, String line, Set<String> stopWords) throws IOException {
-        line = normalizeLine(line);
+    public void writeText(BufferedWriter writer, Map<String,Integer> terms, String line, Set<String> stopWords, boolean trimTerms) throws IOException {
+        line = normalizeLine(line, trimTerms);
 
         for (String word : line.split("\\s")) {
             tokennizer.setTokenizationString(word);
@@ -44,7 +47,10 @@ public abstract class DocumentHandler {
         writer.write("\n");
     }
 
-    private String normalizeLine(String line){
+    private String normalizeLine(String line, boolean trimTerms){
+        if (trimTerms){
+            line = rootStemmer.findRoot(line);
+        }
         return punctuationsRemover.removePunctuations(diacriticsRemover.removeDiacritics(araNormalizer.normalize(line)));
     }
 

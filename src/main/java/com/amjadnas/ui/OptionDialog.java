@@ -19,4 +19,10 @@ public class OptionDialog {
     public static void showSuccessDialog(Component parent, String message) {
         JOptionPane.showConfirmDialog(parent, message, "Success", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE);
     }
+
+    public static boolean showQuestionDialog(Component component, String question){
+        return JOptionPane.showConfirmDialog(component, question, "Please Choose", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
+
+    }
+
 }

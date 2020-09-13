@@ -17,8 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.amjadnas.ui.OptionDialog.showErrorDialog;
-import static com.amjadnas.ui.OptionDialog.showSuccessDialog;
+import static com.amjadnas.ui.OptionDialog.*;
 
 public class TextProcessScreen extends JFrame implements Runnable, WindowListener, Taskistener {
     private JButton browseButton;
@@ -32,6 +31,7 @@ public class TextProcessScreen extends JFrame implements Runnable, WindowListene
     private JTextField termsPathTextField;
     private JTextField stopWordsPathTextField;
     private JButton browseStopwords;
+    private JCheckBox stemTermsCheckBox;
     private String folderPath;
     private CompletableFuture<Vector<String>> completableFuture;
     private Controller controller;
@@ -98,9 +98,7 @@ public class TextProcessScreen extends JFrame implements Runnable, WindowListene
             fc.setDialogType(JFileChooser.SAVE_DIALOG);
             int returnVal = fc.showDialog(this, "Select");
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-
-                controller.processFiles(this, fc.getSelectedFile(), termsPathTextField.getText(), stopWordsPathTextField.getText(), folderPath);
-
+                controller.processFiles(this, fc.getSelectedFile(), termsPathTextField.getText(), stopWordsPathTextField.getText(), folderPath, stemTermsCheckBox.isSelected());
             }else  {
                 showErrorDialog(this, "You have to choose a directory to save the files in it.");
             }
@@ -124,7 +122,7 @@ public class TextProcessScreen extends JFrame implements Runnable, WindowListene
 
     private void extractVocabulary(ActionEvent actionEvent) {
         if (!vocabularyPathTextField.getText().isEmpty()){
-            controller.extractVocabulary(this,vocabularyPathTextField.getText(), termsPathTextField.getText());
+            controller.extractVocabulary(this,vocabularyPathTextField.getText(), termsPathTextField.getText(), stemTermsCheckBox.isSelected());
         }else
             showErrorDialog(this, "A controlled vocabulary must be loaded!");
     }

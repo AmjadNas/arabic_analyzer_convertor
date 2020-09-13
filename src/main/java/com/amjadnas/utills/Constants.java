@@ -2,11 +2,12 @@ package com.amjadnas.utills;
 
 import java.util.ArrayList;
 
-public class Constants {
+public final class Constants {
     public static final String PDF = "pdf";
     public static final String TXT = "txt";
     public static final String DOCX = "docx";
     public static final String DOC = "doc";
+    public static final String CSV = "csv";
 
     public static final String SPLIT_REGEX = "\\r?\\n?\\u000B";
 
@@ -19,6 +20,7 @@ public class Constants {
     public static final char YAA='\u064A';
     public static final char DOTLESS_YAA='\u0649';
     public static final String TATWEEL="\u0640";
+    public static final String JSON = "json";
 
     public static ArrayList<String> punctuations = new ArrayList<String>();
     public static ArrayList<String> diacritics = new ArrayList<String>();

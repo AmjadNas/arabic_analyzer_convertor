@@ -9,7 +9,7 @@ public final class Constants {
     public static final String DOC = "doc";
     public static final String CSV = "csv";
 
-    public static final String SPLIT_REGEX = "\\r?\\n?\\u000B";
+    public static final String SPLIT_REGEX = "\\r?\\n?\\u000B?\\.";
 
     public static final char ALIF='\u0627';
     public static final char ALIF_HAMZA_ABOVE='\u0623';

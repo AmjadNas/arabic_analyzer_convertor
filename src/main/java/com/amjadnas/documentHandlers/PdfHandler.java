@@ -1,6 +1,7 @@
 package com.amjadnas.documentHandlers;
 
 import com.amjadnas.documentHandlers.DocumentHandler;
+import com.amjadnas.utills.Constants;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
@@ -21,7 +22,7 @@ class PdfHandler extends DocumentHandler {
 //                for (String str : text.split()) {
 //                    writeText(writer, str, words, file.getName());
 //                }
-                return Stream.of(text.split("[،|.|\\r|\\n |,]"))
+                return Stream.of(text.split(Constants.SPLIT_REGEX))
                         .collect(Collectors.toList());
             }else
                 throw new IOException("document is encrypted!");

@@ -1,9 +1,6 @@
 package com.amjadnas.documentHandlers;
 
-import com.amjadnas.utills.AraNormalizer;
-import com.amjadnas.utills.DiacriticsRemover;
-import com.amjadnas.utills.PunctuationsRemover;
-import com.amjadnas.utills.RootStemmer;
+import com.amjadnas.utills.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,14 +13,14 @@ public abstract class DocumentHandler {
     private final DiacriticsRemover diacriticsRemover;
     private final AraNormalizer araNormalizer;
     private final PunctuationsRemover punctuationsRemover;
-    private final RootStemmer rootStemmer;
+    private final LightStemmer2 rootStemmer;
 
     DocumentHandler() {
         tokennizer = new AlKhalil2.text.tokenization.Tokenization();
         diacriticsRemover = new DiacriticsRemover();
         araNormalizer = new AraNormalizer();
         punctuationsRemover = new PunctuationsRemover();
-        rootStemmer = new RootStemmer();
+        rootStemmer = new LightStemmer2();
     }
 
     public abstract List<String> parseDocument(File file) throws IOException;
@@ -35,31 +32,38 @@ public abstract class DocumentHandler {
     }
 
     public void writeText(BufferedWriter writer, Map<String,Integer> terms, String line, Set<String> stopWords, boolean trimTerms) throws IOException {
-        line = normalizeLine(line, trimTerms);
+//        line = normalizeLine(line, trimTerms);
 
         for (String word : line.split("\\s")) {
             tokennizer.setTokenizationString(word);
             List<String> tokensList = new ArrayList<>(tokennizer.getTokens());
-            handleToken(writer, tokensList, stopWords);
-            updateTerms(terms, word, stopWords);
+            handleToken(writer, tokensList, stopWords, terms,trimTerms);
         }
 
         writer.write("\n");
     }
 
     private String normalizeLine(String line, boolean trimTerms){
+
+        line = araNormalizer.normalize(line);
+        line = diacriticsRemover.removeDiacritics(line);
+        line = punctuationsRemover.removePunctuations(line);
+
         if (trimTerms){
-            line = rootStemmer.findRoot(line);
+            line = rootStemmer.findStem(line);
         }
-        return punctuationsRemover.removePunctuations(diacriticsRemover.removeDiacritics(araNormalizer.normalize(line)));
+
+        return line;
     }
 
-    private void handleToken(BufferedWriter writer, List<String> tokensList, Set<String> stopWords) throws IOException {
+    private void handleToken(BufferedWriter writer, List<String> tokensList, Set<String> stopWords, Map<String,Integer> terms, boolean trimTerms) throws IOException {
         for (String token : tokensList) {
-            if (!stopWords.contains(token)){
-                writer.write(token);
+            String tmp = normalizeLine(token, trimTerms);
+            if (!stopWords.contains(tmp)){
+                writer.write(tmp);
                 writer.write(" ");
             }
+            updateTerms(terms, tmp, stopWords);
         }
     }
 

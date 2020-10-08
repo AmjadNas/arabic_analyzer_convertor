@@ -51,7 +51,7 @@ public class Parser {
                 writer.write(str);
                 i++;
                 int progress = (i * 100) / size;
-                listener.onProgress(null, progress);
+                listener.onProgress(str, progress);
             }
         }
     }

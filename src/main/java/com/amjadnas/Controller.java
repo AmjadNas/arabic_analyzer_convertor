@@ -98,7 +98,7 @@ public final class Controller {
         }
 
         @Override
-        protected Void doInBackground() throws Exception {
+        protected Void doInBackground()  {
             Parser parser = new Parser(trimTerm);
             onPreStart();
             try {
@@ -116,7 +116,8 @@ public final class Controller {
                 parser.processAsync(file, files, this);
                 listener.onSuccess("Extracted vocabulary successfully");
 
-            } catch (IOException | CsvException e) {
+            } catch (Exception e) {
+                e.printStackTrace();
                 listener.onError(e);
                 cancel(true);
             }
